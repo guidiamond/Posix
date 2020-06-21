@@ -8,6 +8,8 @@
 #include <time.h>
 #include <signal.h>
 
+volatile sig_atomic_t is_called = 0;
+
 void  intHandler(int sig)
 {
   char  c;
@@ -24,6 +26,15 @@ void  intHandler(int sig)
   }
   else
     signal(sig, intHandler);
+}
+
+void alarmHandler(int sig){
+  if (is_called == 0){
+    is_called = 1;
+    printf("[TIME]");
+  }
+  printf("%d", is_called);
+  exit(0);
 }
 
 int main(int argc, char *argv[]) {
@@ -45,8 +56,10 @@ int main(int argc, char *argv[]) {
   int status = 0;
   int pass_count = 0;
 
+      signal(SIGALRM, alarmHandler);
   for (int i = 0; i < size; i++) {
     if ((child_pid = fork()) == 0) {
+      alarm(2);
       if ((strcmp(all_tests[i].name,argv[1]) == 0 ) || (argc == 1)) {
         start = clock();
         if (all_tests[i].function() >= 0) {
