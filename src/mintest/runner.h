@@ -33,7 +33,6 @@ void alarmHandler(int sig){
     is_called = 1;
     printf("[TIME]");
   }
-  printf("%d", is_called);
   exit(0);
 }
 
