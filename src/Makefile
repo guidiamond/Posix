@@ -1,4 +1,4 @@
-TARGETS=example
+TARGETS=tests
 CROSS_TOOL = 
 CC_CPP = $(CROSS_TOOL)g++
 CC_C = $(CROSS_TOOL)gcc
