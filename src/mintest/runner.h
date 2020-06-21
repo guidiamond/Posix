@@ -6,9 +6,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
 
+void  intHandler(int sig)
+{
+  char  c;
+
+  printf("Do you really want to quit? [y/n] ");
+  c = getchar();
+  if (c == 'y' || c == 'Y')
+  {
+    printf("[STOP]\n");
+    exit(0);
+  }
+  else if (c == 'n'|| c=='N') {
+    signal(sig, SIG_IGN);
+  }
+  else
+    signal(sig, intHandler);
+}
 
 int main(int argc, char *argv[]) {
+
   // Vars
   clock_t start, end;
   double cpu_time_used;
@@ -44,7 +63,9 @@ int main(int argc, char *argv[]) {
       exit(0);
     }
   }
+
   while ((wpid = wait(&status)) > 0) {
+    signal(SIGINT, intHandler);
     if (WEXITSTATUS(status) == 1) {
       pass_count++;
     }
