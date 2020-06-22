@@ -86,16 +86,15 @@ int test11() {
 }
 
 int test12() {
-  // faça muito trabalho, mas eventualmente acabe (sem usar sleep )
   int sum = 0;
-  for (int i = 0; i < 1000; i++) {
-    for (int j = 0; j < 1000; j++) {
-      for (int k = 0; k < 1000; k++) {
+  for (int i = 0; i < 100; i++) {
+    for (int j = 0; j < 100; j++) {
+      for (int k = 0; k < 100; k++) {
         sum++;
       }
     }
   }
-  test_assert(100 * 100 * 100 == sum, "Heavy Work");
+  test_assert(100 * 100 * 100 == sum, "Heavy Test");
   return 0;
 }
 test_list = {TEST(test1), TEST(test2),  TEST(test3),  TEST(test4),

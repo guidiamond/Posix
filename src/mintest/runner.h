@@ -7,18 +7,19 @@
 #include <stdlib.h>
 #include <time.h>
 #include <signal.h>
+#include "../colors.h"
 
-volatile sig_atomic_t is_called = 0;
+const char *test_name = NULL;
 
 void  intHandler(int sig)
 {
   char  c;
 
-  printf("Do you really want to quit? [y/n] ");
+  printf(ANSI_COLOR_MESSAGE"Do you really want to quit? [y/n] ");
   c = getchar();
   if (c == 'y' || c == 'Y')
   {
-    printf("[STOP]\n");
+    printf(ANSI_COLOR_PROCESS_CALL"[STOP]\n");
     exit(0);
   }
   else if (c == 'n'|| c=='N') {
@@ -28,16 +29,13 @@ void  intHandler(int sig)
     signal(sig, intHandler);
 }
 
+
 void alarmHandler(int sig){
-  if (is_called == 0){
-    is_called = 1;
-    printf("[TIME]");
-  }
+  printf(ANSI_COLOR_PROCESS_CALL"%s [TIME]\n", test_name);
   exit(0);
 }
 
 int main(int argc, char *argv[]) {
-
   // Vars
   clock_t start, end;
   double cpu_time_used;
@@ -48,24 +46,26 @@ int main(int argc, char *argv[]) {
     argv[1] = "";
   }
 
-  printf("Running %d tests:\n", size);
+  printf(ANSI_COLOR_MESSAGE"Running %d tests:\n", size);
   printf("=====================\n\n");
 
   pid_t child_pid, wpid;
   int status = 0;
   int pass_count = 0;
 
-      signal(SIGALRM, alarmHandler);
+  signal(SIGALRM, alarmHandler);
   for (int i = 0; i < size; i++) {
     if ((child_pid = fork()) == 0) {
       alarm(2);
       if ((strcmp(all_tests[i].name,argv[1]) == 0 ) || (argc == 1)) {
+        test_name = argv[1];
         start = clock();
         if (all_tests[i].function() >= 0) {
-          printf("%s: [PASS]", all_tests[i].name);
+          printf(ANSI_COLOR_RESET"%s: ", all_tests[i].name);
+          printf(ANSI_COLOR_SUCCESS"[PASS]\n");
           end = clock();
           cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-          printf(" (%fs)\n", cpu_time_used);
+          printf(ANSI_COLOR_RESET" (%fs)\n", cpu_time_used);
           exit(1);
         };
         end = clock();
@@ -85,10 +85,10 @@ int main(int argc, char *argv[]) {
 
   printf("\n\n=====================\n");
   if (argc == 1) {
-    printf("%d/%d tests passed\n", pass_count, size);
+    printf(ANSI_COLOR_RESET"%d/%d tests passed\n", pass_count, size);
   }
   else {
-    printf("%d/%d tests passed\n", pass_count, argc-1);
+    printf(ANSI_COLOR_RESET"%d/%d tests passed\n", pass_count, argc-1);
   }
   return 0;
 }
